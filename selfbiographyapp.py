@@ -1,6 +1,5 @@
 import streamlit as st
 import smtplib
-import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from PIL import Image
@@ -12,7 +11,7 @@ def send_email(
     subject,
     message,
     from_email="markhuyoa2015@gmail.com",
-    password=None,
+    password="MawYoa@2015",  # Replace with your actual email password
 ):
     msg = MIMEMultipart()
     msg["From"] = from_email
@@ -25,13 +24,11 @@ def send_email(
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
         server.login(from_email, password)
-        text = msg.as_string()
-        server.sendmail(from_email, to_email, text)
+        server.sendmail(from_email, to_email, msg.as_string())
         server.quit()
         return True
     except Exception as e:
-        print(f"Failed to send email due to {e}")
-        return False
+        return f"Failed to send email due to: {str(e)}"
 
 
 # Title and Sidebar
@@ -130,13 +127,11 @@ elif options == "Contact":
             # Send email
             subject = f"New message from {name}"
             full_message = f"Message from {name} ({email}):\n\n{message}"
-            # Retrieve email password from an environment variable
-            email_password = os.getenv("EMAIL_PASSWORD")
             success = send_email(
                 to_email="markhuyoa2015@gmail.com",
                 subject=subject,
                 message=full_message,
-                password=email_password,
+                password="MawYoa@2015",  # Replace with your actual email password
             )
 
             if success:
