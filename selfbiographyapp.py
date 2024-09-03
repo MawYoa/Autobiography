@@ -1,5 +1,36 @@
 import streamlit as st
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from PIL import Image
+
+
+def send_email(
+    to_email,
+    subject,
+    message,
+    from_email="markhuyoa2015@gmail.com",
+    password="MawYoa@2015",
+):
+    msg = MIMEMultipart()
+    msg["From"] = from_email
+    msg["To"] = to_email
+    msg["Subject"] = subject
+
+    msg.attach(MIMEText(message, "plain"))
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(from_email, password)
+        text = msg.as_string()
+        server.sendmail(from_email, to_email, text)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Failed to send email due to {e}")
+        return False
+
 
 # Title and Sidebar
 st.set_page_config(page_title="Mark Edwin's Portfolio", layout="wide")
@@ -10,11 +41,8 @@ options = st.sidebar.radio("Go to", ["Home", "Autobiography", "Portfolio", "Cont
 # Home Section
 if options == "Home":
     st.header("Welcome to My Portfolio!")
-
-    # Adjusting the profile image size
     image = Image.open("profilepic.jpg")
     st.image(image, width=200, caption="Mark Edwin E. Huyo-a")
-
     st.write(
         """
         Hello! I'm Mark Edwin Etcobanez Huyo-a, a 4th-year Information Technology student. 
@@ -36,7 +64,6 @@ elif options == "Autobiography":
         """
     )
 
-    # Adding expander sections for more details
     with st.expander("Early Life"):
         st.write(
             "I was born in Bagong Silang, Caloocan City and raised in Barangay Pili, Municipality of Placer, Masbate. My interest in technology began when I was in high school, where I started exploring programming and computer science."
@@ -57,7 +84,6 @@ elif options == "Portfolio":
     st.header("My Portfolio")
     st.write("Here are some of the projects I have worked on:")
 
-    # Projects Grid with more descriptive project titles and links
     col1, col2 = st.columns(2)
 
     with col1:
@@ -90,7 +116,6 @@ elif options == "Portfolio":
 elif options == "Contact":
     st.header("Get in Touch")
 
-    # Contact Form with placeholders
     st.write("Feel free to reach out to me through the form below!")
 
     with st.form(key="contact_form"):
@@ -100,4 +125,18 @@ elif options == "Contact":
         submit_button = st.form_submit_button(label="Send Message")
 
         if submit_button:
-            st.success(f"Thank you {name}! Your message has been sent successfully.")
+            # Send email
+            subject = f"New message from {name}"
+            full_message = f"Message from {name} ({email}):\n\n{message}"
+            success = send_email(
+                to_email="your_email@gmail.com", subject=subject, message=full_message
+            )
+
+            if success:
+                st.success(
+                    f"Thank you {name}! Your message has been sent successfully."
+                )
+            else:
+                st.error(
+                    "Sorry, there was an error sending your message. Please try again later."
+                )
