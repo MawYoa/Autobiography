@@ -1,16 +1,18 @@
 import streamlit as st
 import smtplib
+import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from PIL import Image
 
 
+# Function to send an email
 def send_email(
     to_email,
     subject,
     message,
     from_email="markhuyoa2015@gmail.com",
-    password="MawYoa@2015",
+    password=None,
 ):
     msg = MIMEMultipart()
     msg["From"] = from_email
@@ -128,8 +130,13 @@ elif options == "Contact":
             # Send email
             subject = f"New message from {name}"
             full_message = f"Message from {name} ({email}):\n\n{message}"
+            # Retrieve email password from an environment variable
+            email_password = os.getenv("EMAIL_PASSWORD")
             success = send_email(
-                to_email="your_email@gmail.com", subject=subject, message=full_message
+                to_email="markhuyoa2015@gmail.com",
+                subject=subject,
+                message=full_message,
+                password=email_password,
             )
 
             if success:
