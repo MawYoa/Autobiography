@@ -35,7 +35,9 @@ def send_email(
 st.set_page_config(page_title="Mark Edwin's Portfolio", layout="wide")
 st.title("My Autobiography and Portfolio")
 st.sidebar.title("Navigation")
-options = st.sidebar.radio("Go to", ["Home", "Autobiography", "Portfolio", "Contact"])
+options = st.sidebar.selectbox(
+    "Go to", ["Home", "Autobiography", "Portfolio", "Contact"]
+)
 
 # Home Section
 if options == "Home":
